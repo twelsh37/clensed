@@ -9,11 +9,10 @@ import dash_core_components as dcc
 import dash_html_components as html
 from itertools import cycle
 
-
 # ------------------------------------------------------------------------------
 # Set Plotly as our defauly plotting backend
 # ------------------------------------------------------------------------------
-pd.options.plotting.backend='plotly'
+pd.options.plotting.backend = 'plotly'
 
 # ------------------------------------------------------------------------------
 # Setup our Colour Choices
@@ -24,7 +23,6 @@ color_1 = "#3498db"
 color_2 = "#071633"
 # Black
 color_3 = "#000000"
-
 
 palette = cycle(px.colors.qualitative.Dark24)
 
@@ -37,39 +35,39 @@ APP_DATA = "clensed.csv"
 # import dataframe and do some column renames
 raca_df = pd.read_csv(APP_DATA)
 
-raca_df.rename(columns={'Process (Title)' : 'process_title',
-                   'Process description' : 'process_description',
-                   'Risk ID' : 'risk_id',
-                   'Risk Owner' : 'risk_owner',
-                   'Risk(Title)' : 'risk_title',
-                   'Risk Description' : 'risk_description',
-                   'Risk Category 1' : 'risk_types',
-                   'Risk Category 2' : 'risk',
-                   'Risk Category 3' : 'level3',
-                   'Associated KRIs' : 'associated_kris',
-                   'I' : 'gross_impact',
-                   'L' : 'gross_likelihood',
-                   'Control ID' : 'control_id',
-                   'Control Owner' : 'control_owner',
-                   'Control (Title)' : 'control_title',
-                   'Control Description' : 'control_description',
-                   'Control Activity' : 'control_activity',
-                   'Control Type' : 'control_type',
-                   'Control Frequency' : 'control_frequency',
-                   'DE & OE?':'de_oe',
-                   'Commentary on DE & OE assessment': 'de_oe_commentary',
-                   'I.1' : 'net_impact',
-                   'L.1' : 'net_likelihood',
-                   'Commentary on Net Risk Assessment' :
+raca_df.rename(columns={'Process (Title)': 'process_title',
+                        'Process description': 'process_description',
+                        'Risk ID': 'risk_id',
+                        'Risk Owner': 'risk_owner',
+                        'Risk(Title)': 'risk_title',
+                        'Risk Description': 'risk_description',
+                        'Risk Category 1': 'risk_types',
+                        'Risk Category 2': 'risk',
+                        'Risk Category 3': 'level3',
+                        'Associated KRIs': 'associated_kris',
+                        'I': 'gross_impact',
+                        'L': 'gross_likelihood',
+                        'Control ID': 'control_id',
+                        'Control Owner': 'control_owner',
+                        'Control (Title)': 'control_title',
+                        'Control Description': 'control_description',
+                        'Control Activity': 'control_activity',
+                        'Control Type': 'control_type',
+                        'Control Frequency': 'control_frequency',
+                        'DE & OE?': 'de_oe',
+                        'Commentary on DE & OE assessment': 'de_oe_commentary',
+                        'I.1': 'net_impact',
+                        'L.1': 'net_likelihood',
+                        'Commentary on Net Risk Assessment':
                             'net_risk_assesment_commentary',
-                   'Risk Decision' : 'risk_decision',
-                   'Issue Description (if applicable)' : 'issue_description',
-                   'Action Description' : 'action_description',
-                   'Action Owner' : 'action_owner',
-                   'Action Due Date' : 'action_due_date',
-                   'Completion Date' : 'completion_date',
-                   'Action ID' : 'action_id'
-                  },inplace = True)
+                        'Risk Decision': 'risk_decision',
+                        'Issue Description (if applicable)': 'issue_description',
+                        'Action Description': 'action_description',
+                        'Action Owner': 'action_owner',
+                        'Action Due Date': 'action_due_date',
+                        'Completion Date': 'completion_date',
+                        'Action ID': 'action_id'
+                        }, inplace=True)
 
 # calculate our gross and net risk scores
 # it does this by multiplying the impact and likelihood columns
@@ -86,13 +84,18 @@ raca_df['net_risk'].apply(pd.to_numeric)
 # the alpha prefix from the risk_id. E.g 'GMBH-P01-R01' becomes 'GMBH'
 # 'GMBH' is then appended to the list prefix[]
 prefix = []
-def business_unit():
-    prefix_search=re.compile(r'^[a-zA-Z]+')
 
-    for value in raca_df['risk_id']:
-        zz = prefix_search.findall(str(value))
+
+def business_unit():
+    prefix_search = re.compile(r'^[a-zA-Z]+')
+
+    dff = raca_df
+
+    for e in dff['risk_id']:
+        zz = prefix_search.findall(str(e))
         prefix.append(zz)
     return prefix
+
 
 business_unit()
 
@@ -115,7 +118,7 @@ for value in extract:
         result.append('Client Profile')
     else:
         print(f"Business Unit {value} has not been added to the function yet")
-    #print(f'DEBUG1: Results just in {result}')
+    # print(f'DEBUG1: Results just in {result}')
 
 # Apply reuslts to 'business_unit' to create the column in the dataframe
 raca_df['business_unit'] = result
@@ -182,7 +185,7 @@ navbar = dbc.Navbar(
 risk_types_dropdown = dcc.Dropdown(
     id='risk_types',
     multi=False,
-    value = 'All',
+    value='All',
     clearable=False,
     searchable=True,
     persistence=True,
@@ -190,15 +193,15 @@ risk_types_dropdown = dcc.Dropdown(
     style={"width": "100%"},
 
     options=[{'label': k, 'value': k}
-             for k in sorted(raca_df['risk_types'].astype(str).unique())]
-            + [{'label': 'All', 'value': 'All'}],
+             for k in sorted(raca_df['risk_types'].astype(str).unique())] +
+            [{'label': 'All', 'value': 'All'}],
 )
 
 # Risk Category 2
 risk_dropdown = dcc.Dropdown(
     id='risk',
     multi=False,
-    value ='All',
+    value='All',
     clearable=False,
     searchable=True,
     placeholder='Select...',
@@ -214,7 +217,7 @@ risk_dropdown = dcc.Dropdown(
 level3_dropdown = dcc.Dropdown(
     id='level3',
     multi=False,
-    value ='All',
+    value='All',
     clearable=False,
     searchable=True,
     placeholder='Select...',
@@ -240,8 +243,8 @@ business_unit_dropdown = dcc.Dropdown(
     style={"width": "100%"},
 
     options=[{'label': k, 'value': k}
-             for k in sorted(raca_df['business_unit'].astype(str).unique())]
-            + [{'label': 'All', 'value': 'All'}],
+             for k in sorted(raca_df['business_unit'].astype(str).unique())] +
+            [{'label': 'All', 'value': 'All'}],
 )
 
 # ------------------------------------------------------------------------------
@@ -256,11 +259,14 @@ overview_options_card = dbc.Card(
                         dbc.Row([dbc.Label("Level 1 Risks")]),
                         dbc.Row([risk_types_dropdown]),
                         html.Br(),
-                        dbc.Row([dbc.Label("Level 2 Risks")]),
-                        dbc.Row([risk_dropdown]),
-                        html.Br(),
-                        dbc.Row([dbc.Label("Level 3 Risks")]),
-                        dbc.Row([level3_dropdown]),
+                        html.Div(id='dropdown-container', children=[
+                            dbc.Row([dbc.Label("Level 2 Risks")]),
+                            dbc.Row([risk_dropdown]),
+                            html.Br(),
+                            dbc.Row([dbc.Label("Level 3 Risks")]),
+                            dbc.Row([level3_dropdown]),
+                            # This is the line that shows or hides the sliders
+                        ], style={'display': 'block', 'marginBottom': 50}),
                         html.Br(),
                         html.Br(),
                         dbc.Row([dbc.Label("Or Select a Business Unit Below")]),
@@ -282,7 +288,7 @@ overview_options_card = dbc.Card(
 data_table = dash_table.DataTable(
     id='table',
     # This line reads in all the columns in our dataframe raca_df
-    #columns=[{"name": i, "id": i} for i in raca_df.columns],
+    # columns=[{"name": i, "id": i} for i in raca_df.columns],
     columns=[
         {'name': 'Risk description', 'id': 'risk_description', 'type': 'text',
          'editable': False},
@@ -302,8 +308,8 @@ data_table = dash_table.DataTable(
         {'name': 'Net Risk', 'id': 'net_risk', 'type': 'numeric',
          'editable': False},
     ],
-    data =[],
-    #data=raca_df.to_dict('records'),
+    data=[],
+    # data=raca_df.to_dict('records'),
     filter_action="native",
     sort_action="native",
     style_cell={
@@ -312,12 +318,12 @@ data_table = dash_table.DataTable(
         'maxWidth': 0,
         'textAlign': 'left',
         'fontSize': 12,
-        'font-family':'sans-serif',
+        'font-family': 'sans-serif',
     },
 
-    #----------------------------------------------------------------
+    # ----------------------------------------------------------------
     # Overflow cells' content into multiple lines
-    #----------------------------------------------------------------
+    # ----------------------------------------------------------------
     style_data={
         'whiteSpace': 'normal',
         'height': 'auto'
@@ -370,20 +376,20 @@ data_table = dash_table.DataTable(
             'if': {
                 'column_editable': False  # True | False
             },
-         },
+        },
 
         # Format Gross and Net Risk ***************************
         # Cells dependant on risk score ***********************
-        #|------------|------------------|---------|------------|
-        #| Priority   | RGB Colour Value | Hex     |  Range     |
-        #|------------+------------------+---------+------------|
-        #| Very High  | 255, 0, 0        | #FF0000 | > 18       |
-        #| High       | 255, 165, 0      | #FFA500 | > 11 < 17  |
-        #| Medium     | 255, 255, 0      | #FFFF00 | > 7 < 11   |
-        #| Low        | 154, 205, 50     | #9ACD32 | > 3 < 7    |
-        #| Very Low   | 127, 255, 0      | #7FFF00 | <= 3       |
-        #| Blank      | 255, 255, 255    | #FFFFFF | " "        |
-        #|------------|------------------|---------|------------|
+        # |------------|------------------|---------|------------|
+        # | Priority   | RGB Colour Value | Hex     |  Range     |
+        # |------------+------------------+---------+------------|
+        # | Very High  | 255, 0, 0        | #FF0000 | > 18       |
+        # | High       | 255, 165, 0      | #FFA500 | > 11 < 17  |
+        # | Medium     | 255, 255, 0      | #FFFF00 | > 7 < 11   |
+        # | Low        | 154, 205, 50     | #9ACD32 | > 3 < 7    |
+        # | Very Low   | 127, 255, 0      | #7FFF00 | <= 3       |
+        # | Blank      | 255, 255, 255    | #FFFFFF | " "        |
+        # |------------|------------------|---------|------------|
 
         # Very High - Gross Risk
         {
@@ -506,10 +512,10 @@ data_table = dash_table.DataTable(
         },
     ],
 
-    #------------------------------------------------------------------
+    # ------------------------------------------------------------------
     # Freeze Rows - digit represents number of rows frozen 0 being header
     # row
-    #------------------------------------------------------------------
+    # ------------------------------------------------------------------
     fixed_rows={'headers': True, 'data': 0},
 
     style_header={
@@ -568,7 +574,7 @@ tab1_content = dbc.Row(
                 dcc.Graph(id='piechart2'),
             ], className='six columns'),
 
-        ],),
+        ], ),
     ],
     no_gutters=True,
 )
@@ -663,6 +669,21 @@ def toggle_tabs(id_tab):
 
 
 # ------------------------------------------------------------------------------
+# Callback to hide L2 and L3 dropdown boxes if risk_type == 'ALL'
+# ------------------------------------------------------------------------------
+# https://stackoverflow.com/questions/62788398/
+# hide-show-dash-slider-component-by-updating-different-dropdown-component
+@app.callback(
+    Output('dropdown-container', 'style'),
+    [Input('risk_types', 'value')])
+def show_hide_element(visibility_state):
+    if visibility_state == 'All':
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
+
+# ------------------------------------------------------------------------------
 # Set Callback to define our dropdown boxes
 # ------------------------------------------------------------------------------
 @app.callback(
@@ -671,14 +692,15 @@ def toggle_tabs(id_tab):
 def set_tl2_options(tl1_options):
     if tl1_options != 'All':
         raca_options = raca_df[raca_df['risk_types'] == tl1_options]
-        #print(f'DEBUG1: TL 1 Not equal to all: {raca_options}')
+        # print(f'DEBUG1: TL 1 Not equal to all: {raca_options}')
         print(f'DEBUG 1.1: L1 options "NOT ALL": {raca_options}')
     else:
         raca_options = raca_df
-        #print(f'DEBUG2: TL1 equal to all: {raca_options}')
+        # print(f'DEBUG2: TL1 equal to all: {raca_options}')
         print(f'DEBUG 1.2: L1 options "ALL": {raca_options}')
     return [{'label': i, 'value': i}
             for i in sorted(raca_options['risk'].astype(str).unique())]
+
 
 @app.callback(
     Output('level3', 'options'),
@@ -693,9 +715,10 @@ def set_tl3_options(tl2_options):
     return [{'label': i, 'value': i}
             for i in sorted(raca_options['level3'].astype(str).unique())]
 
+
 # ------------------------------------------------------------------------------
 # Define Callback to update data_table  on tab_1 id = table
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 @app.callback(
     Output('table', 'data'),
     Input('level3', 'value'))
@@ -706,10 +729,7 @@ def output_dataframe(data):
 
 # ------------------------------------------------------------------------------
 # Define callback to update graph
-#------------------------------------------------------------------------------
-
-
-
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # Run app and display the result
