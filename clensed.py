@@ -670,7 +670,7 @@ def toggle_tabs(id_tab):
     Input('risk_types', 'value'))
 def set_tl2_options(tl1_options):
     if tl1_options != 'All':
-        raca_options = raca_df['risk_types'] == tl1_options
+        raca_options = raca_df[raca_df['risk_types'] == tl1_options]
         #print(f'DEBUG1: TL 1 Not equal to all: {raca_options}')
         print(f'DEBUG1: L1 options "NOT ALL": {raca_options}')
     else:
