@@ -301,9 +301,9 @@ data_table = dash_table.DataTable(
          'editable': False},
         {'name': 'Net Risk', 'id': 'net_risk', 'type': 'numeric',
          'editable': False},
-
     ],
-    data=raca_df.to_dict('records'),
+    data =[],
+    #data=raca_df.to_dict('records'),
     filter_action="native",
     sort_action="native",
     style_cell={
@@ -672,11 +672,11 @@ def set_tl2_options(tl1_options):
     if tl1_options != 'All':
         raca_options = raca_df[raca_df['risk_types'] == tl1_options]
         #print(f'DEBUG1: TL 1 Not equal to all: {raca_options}')
-        print(f'DEBUG1: L1 options "NOT ALL": {raca_options}')
+        print(f'DEBUG 1.1: L1 options "NOT ALL": {raca_options}')
     else:
         raca_options = raca_df
         #print(f'DEBUG2: TL1 equal to all: {raca_options}')
-        print(f'DEBUG2: L1 options "ALL": {raca_options}')
+        print(f'DEBUG 1.2: L1 options "ALL": {raca_options}')
     return [{'label': i, 'value': i}
             for i in sorted(raca_options['risk'].astype(str).unique())]
 
@@ -686,20 +686,30 @@ def set_tl2_options(tl1_options):
 def set_tl3_options(tl2_options):
     if tl2_options != 'All':
         raca_options = raca_df[raca_df['risk'] == tl2_options]
-        #print(f'DEBUG3: TL2 Not equal to all: {raca_options}')
+        print(f'DEBUG 2.1: TL2 Not equal to all: {raca_options}')
     else:
         raca_options = raca_df
-        #print(f'DEBUG4: TL2 equal to all: {raca_options}')
+        print(f'DEBUG 2.2: TL2 equal to all: {raca_options}')
     return [{'label': i, 'value': i}
             for i in sorted(raca_options['level3'].astype(str).unique())]
+
+# ------------------------------------------------------------------------------
+# Define Callback to update data_table  on tab_1 id = table
+#------------------------------------------------------------------------------
+@app.callback(
+    Output('table', 'data'),
+    Input('level3', 'value'))
+def output_dataframe(data):
+    print(f'DEBUG 3.1: Level 3 value {data}')
+    return raca_df.to_dict('records')
+
 
 # ------------------------------------------------------------------------------
 # Define callback to update graph
 #------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# Define Callback to update data_table  on tab_1 id = table
-#------------------------------------------------------------------------------
+
+
 
 # ------------------------------------------------------------------------------
 # Run app and display the result
