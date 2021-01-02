@@ -672,10 +672,11 @@ def set_tl2_options(tl1_options):
     if tl1_options != 'All':
         raca_options = raca_df['risk_types'] == tl1_options
         #print(f'DEBUG1: TL 1 Not equal to all: {raca_options}')
+        print(f'DEBUG1: L1 options "NOT ALL": {raca_options}')
     else:
         raca_options = raca_df
         #print(f'DEBUG2: TL1 equal to all: {raca_options}')
-
+        print(f'DEBUG2: L1 options "ALL": {raca_options}')
     return [{'label': i, 'value': i}
             for i in sorted(raca_options['risk'].astype(str).unique())]
 
