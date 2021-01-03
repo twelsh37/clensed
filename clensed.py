@@ -296,16 +296,15 @@ overview_options_card = dbc.Card(
                         dbc.Row([business_unit_dropdown]),
                     ], style={"width": "100%", 'marginBottom': 50},
                 ),
-        dbc.Row(
-            [
-                dbc.Col(
+                dbc.Row(
                     [
-                        html.Div(id='legend-container', children=[
-                            dbc.Table(table_header + table_body, bordered=True),
-                            #dbc.Label(html.H4("Legend")),
-                        ], style={'display': 'block', 'marginBottom': 50}),
-                    ]
-                ),
+                        dbc.Col(
+                            [
+                                html.Div(id='legend-container', children=[
+                                    dbc.Table(table_header + table_body, bordered=True),
+                                ], style={'display': 'block', 'marginBottom': 50}),
+                            ]
+                        ),
 
                     ], style={"width": "100%", 'marginBottom': 50},
                 )
@@ -378,9 +377,9 @@ data_table = dash_table.DataTable(
         {'if': {'column_id': 'level3'},
          'width': '10%', 'textAlign': 'left'},
         {'if': {'column_id': 'gross_risk'},
-         'width': '5%'},
+         'width': '7%'},
         {'if': {'column_id': 'gross_risk'},
-         'width': '5%'},
+         'width': '7%'},
     ],
     style_data_conditional=[
         # Set up alternating line colourings for ease of reading
@@ -715,6 +714,7 @@ def show_hide_element(visibility_state):
     else:
         return {'display': 'block'}
 
+
 # ------------------------------------------------------------------------------
 # Only Show the Legend when we are on the Risk Table tab
 # ------------------------------------------------------------------------------
@@ -728,6 +728,7 @@ def show_hide_element(id_tab):
         return {'display': 'block'}
     else:
         return {'display': 'none'}
+
 
 # ------------------------------------------------------------------------------
 # Set Callback to define our dropdown boxes
@@ -774,8 +775,114 @@ def output_dataframe(data):
 
 
 # ------------------------------------------------------------------------------
-# Define callback to update graph
+# Barchart 1 - Total Number of Risks by Business Function
 # ------------------------------------------------------------------------------
+@ app.callback(Output('barchart1', 'figure'),
+               [Input('level3', 'value'),
+                Input('risk', 'value'),
+                Input('risk_types', 'value')])
+def update_figure(risk_types, risk, selected_scale):
+    # Display all risks grouped by business unit
+    group = raca_df.groupby('business_unit')
+    df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
+    # df2
+
+    # Build our graph
+    fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+    fig.update_layout(showlegend=False, title_x=0.5, height=800)
+    # Set the bar colour - CMC Dark Ink
+    # fig.update_traces(marker_color='#071633')
+
+    # Set the bar colour - CMC Blue
+    fig.update_traces(marker_color='#00DEFF')
+
+    # Set text angle on x axes
+    fig.update_xaxes(tickangle=45, categoryorder='total ascending', title_text='<b>Business Function<b>')
+    fig.update_yaxes(title_text='<b>Number of Risks<b>')
+
+    return fig
+
+
+# ------------------------------------------------------------------------------
+# Barchart 2 - Graph showing both Gross and Net risk by business function
+# ------------------------------------------------------------------------------
+@ app.callback(Output('piechart1', 'figure'),
+               [Input('level3', 'value'),
+                Input('risk', 'value'),
+                Input('risk_types', 'value')])
+def update_figure(risk_types, risk, selected_scale):
+    group = raca_df.groupby('business_unit')
+    # Get our Gross risk by business unit
+    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /
+           group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+
+    # Display all risks grouped by business unit
+    #group = df.groupby('business_unit')
+    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /
+           group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+    df4.astype(int)
+
+    fig = go.Figure(data=[
+        go.Bar(name='Gross Risk', x=df3.index, y=df3, marker_color='#00DEFF'),
+        go.Bar(name='Net Risk', x=df4.index, y=df4, marker_color='#0082FF')
+    ])
+    # Change the bar mode
+    fig.update_layout(barmode='group')
+
+    # Build our graph
+    fig.update_layout(title='<b>Comparison of Gross and Net Risk by Business Function</b>)')
+    fig.update_layout(showlegend=True, title_x=0.5, height=800)
+    fig.update_layout(xaxis_categoryorder='total ascending')
+    fig.update_xaxes(tickangle=45, title_text='<b>Business Function<b>')
+    fig.update_yaxes(title_text='<b>Risk Score<b>')
+
+    return fig
+
+
+# ------------------------------------------------------------------------------
+# Pie Chart 1 - Graph showing Total Number of Risks by Business Function
+# ------------------------------------------------------------------------------
+@ app.callback(Output('barchart2', 'figure'),
+               [Input('level3', 'value'),
+                Input('risk', 'value'),
+                Input('risk_types', 'value')])
+def update_figure(risk_types, risk, selected_scale):
+
+    # Display all risks grouped by business unit
+    group = raca_df.groupby('business_unit')
+    df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
+    #df2
+
+    # Build our graph
+    fig = px.pie(df2, values=df2, names=df2.index, title='<b>Total Number of Risks by Business Function<b>')
+    fig.update_layout(showlegend=True, title_x=0.5, height = 800)
+    fig.update_traces(hole=.4,textinfo='value+label+percent', hoverinfo="percent+name", textposition='inside',insidetextorientation='radial')
+
+    return fig
+
+
+# ------------------------------------------------------------------------------
+# Pie Chart 2 - Graph showing Total Number of Risks by Business Function
+# ------------------------------------------------------------------------------
+@ app.callback(Output('piechart2', 'figure'),
+               [Input('level3', 'value'),
+                Input('risk', 'value'),
+                Input('risk_types', 'value')])
+def update_figure(risk_types, risk, selected_scale):
+    group = raca_df.groupby('business_unit')
+    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) / group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) / group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+
+    fig = px.pie(df4, values=df3, names=df4.index, title='<b>Net Risk Score by Business Function<b>')
+    fig.update_layout(showlegend=True, title_x=0.5, height = 800)
+    fig.update_traces(hole=.4,
+                      textinfo='value+label',
+                      hoverinfo="percent+name",
+                      textposition='inside',
+                      insidetextorientation='radial')
+
+    return fig
+
 
 # ------------------------------------------------------------------------------
 # Run app and display the result
