@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import re
 import plotly.express as px
+import plotly.graph_objects as go
 import dash_table
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -248,6 +249,26 @@ business_unit_dropdown = dcc.Dropdown(
 )
 
 # ------------------------------------------------------------------------------
+# Define the table for the Risk Colour Legend
+# ------------------------------------------------------------------------------
+table_header = [
+    html.Thead(html.Tr([html.Th("Legend")]))
+]
+
+row1 = html.Tr([html.Td("Very High")],
+               style={'backgroundColor': 'rgb(255, 0 ,0)'})
+row2 = html.Tr([html.Td("High")],
+               style={'backgroundColor': 'rgb(255, 165 ,0)'})
+row3 = html.Tr([html.Td("Medium")],
+               style={'backgroundColor': 'rgb(255, 255 ,0)'})
+row4 = html.Tr([html.Td("Low")],
+               style={'backgroundColor': 'rgb(154, 205 ,50)'})
+row5 = html.Tr([html.Td("Very Low")],
+               style={'backgroundColor': 'rgb(127,255, 0)'})
+
+table_body = [html.Tbody([row1, row2, row3, row4, row5])]
+
+# ------------------------------------------------------------------------------
 # Define overview options card
 # ------------------------------------------------------------------------------
 overview_options_card = dbc.Card(
@@ -273,7 +294,20 @@ overview_options_card = dbc.Card(
                         html.Br(),
                         dbc.Row([dbc.Label("Select Business Unit")]),
                         dbc.Row([business_unit_dropdown]),
-                    ], style={"width": "100%"},
+                    ], style={"width": "100%", 'marginBottom': 50},
+                ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Div(id='legend-container', children=[
+                            dbc.Table(table_header + table_body, bordered=True),
+                            #dbc.Label(html.H4("Legend")),
+                        ], style={'display': 'block', 'marginBottom': 50}),
+                    ]
+                ),
+
+                    ], style={"width": "100%", 'marginBottom': 50},
                 )
             ], style={"width": "100%"},
         ),
@@ -309,7 +343,6 @@ data_table = dash_table.DataTable(
          'editable': False},
     ],
     data=[],
-    # data=raca_df.to_dict('records'),
     filter_action="native",
     sort_action="native",
     style_cell={
@@ -611,7 +644,7 @@ tabs = dbc.Tabs(
 
         dbc.Tab(tab2_content,
                 tab_id="tab_total",
-                label="Data Table"),
+                label="Risk Table"),
         # style={"width": "100%"}),
 
     ],
@@ -682,6 +715,19 @@ def show_hide_element(visibility_state):
     else:
         return {'display': 'block'}
 
+# ------------------------------------------------------------------------------
+# Only Show the Legend when we are on the Risk Table tab
+# ------------------------------------------------------------------------------
+# https://stackoverflow.com/questions/62788398/
+# hide-show-dash-slider-component-by-updating-different-dropdown-component
+@app.callback(
+    Output('legend-container', 'style'),
+    [Input("tabs", "active_tab")])
+def show_hide_element(id_tab):
+    if id_tab == 'tab_total':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
 
 # ------------------------------------------------------------------------------
 # Set Callback to define our dropdown boxes
