@@ -277,9 +277,11 @@ overview_options_card = dbc.Card(
             [
                 dbc.Col(
                     [
-                        dbc.Row([dbc.Label("Level 1 Risks")]),
-                        dbc.Row([risk_types_dropdown]),
-                        html.Br(),
+                        html.Div(id='overview-container', children=[
+                            dbc.Row([dbc.Label("Level 1 Risks")]),
+                            dbc.Row([risk_types_dropdown]),
+                            html.Br(),
+                        ], style={'display': 'block', 'marginBottom': 50}),
                         html.Div(id='dropdown-container', children=[
                             dbc.Row([dbc.Label("Level 2 Risks")]),
                             dbc.Row([risk_dropdown]),
@@ -290,10 +292,12 @@ overview_options_card = dbc.Card(
                         ], style={'display': 'block', 'marginBottom': 50}),
                         html.Br(),
                         html.Br(),
-                        dbc.Row([dbc.Label("Or Select a Business Unit Below")]),
-                        html.Br(),
-                        dbc.Row([dbc.Label("Select Business Unit")]),
-                        dbc.Row([business_unit_dropdown]),
+                        html.Div(id='business-unit-container', children=[
+                            dbc.Row([dbc.Label("Or Select a Business Unit Below")]),
+                            html.Br(),
+                            dbc.Row([dbc.Label("Select Business Unit")]),
+                            dbc.Row([business_unit_dropdown]),
+                        ], style={'display': 'block', 'marginBottom': 50}),
                     ], style={"width": "100%", 'marginBottom': 50},
                 ),
                 dbc.Row(
@@ -353,6 +357,9 @@ data_table = dash_table.DataTable(
         'font-family': 'sans-serif',
     },
 
+    # Allow exports to CSV files
+    export_format="csv",
+
     # ----------------------------------------------------------------
     # Overflow cells' content into multiple lines
     # ----------------------------------------------------------------
@@ -402,7 +409,8 @@ data_table = dash_table.DataTable(
             'if': {
                 'state': 'active'  # 'active' | 'selected'
             },
-            'border': '3px solid rgb(0, 116, 217)'
+            'border': '1px solid rgb(7, 22, 51)',
+            'backgroundColor': 'rgb(212, 248, 255)'
         },
         {
             'if': {
@@ -699,6 +707,17 @@ def toggle_tabs(id_tab):
     elif id_tab == "tab_total":
         return False, True, "0%", 6, 5, 4, 3, 2
 
+# # ------------------------------------------------------------------------------
+# # Callback to hide L1 dropdown boxes if we are on teh risk table tab
+# # ------------------------------------------------------------------------------
+# @app.callback(
+#     Output('overview-container', 'style'),
+#     [Input("tabs", "active_tab")])
+# def show_hide_element(id_tab):
+#     if id_tab == 'tab_tab':
+#         return {'display': 'block'}
+#     else:
+#         return {'display': 'none'}
 
 # ------------------------------------------------------------------------------
 # Callback to hide L2 and L3 dropdown boxes if risk_type == 'ALL'
@@ -714,7 +733,6 @@ def show_hide_element(visibility_state):
     else:
         return {'display': 'block'}
 
-
 # ------------------------------------------------------------------------------
 # Only Show the Legend when we are on the Risk Table tab
 # ------------------------------------------------------------------------------
@@ -729,6 +747,19 @@ def show_hide_element(id_tab):
     else:
         return {'display': 'none'}
 
+# ------------------------------------------------------------------------------
+# Only Show Select Business unit on Overview page
+# ------------------------------------------------------------------------------
+# https://stackoverflow.com/questions/62788398/
+# hide-show-dash-slider-component-by-updating-different-dropdown-component
+@app.callback(
+    Output('business-unit-container', 'style'),
+    [Input("tabs", "active_tab")])
+def show_hide_element(id_tab):
+    if id_tab == 'tab_map':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
 
 # ------------------------------------------------------------------------------
 # Set Callback to define our dropdown boxes
@@ -789,11 +820,14 @@ def update_figure(risk_types, risk, selected_scale):
 
     # Build our graph
     fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
-    fig.update_layout(showlegend=False, title_x=0.5, height=800)
-    # Set the bar colour - CMC Dark Ink
-    # fig.update_traces(marker_color='#071633')
+    fig.update_layout(showlegend=False,
+                      title_x=0.5,
+                      height=800,
+                      paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)'
+                      )
 
-    # Set the bar colour - CMC Blue
+        # Set the bar colour - CMC Blue
     fig.update_traces(marker_color='#00DEFF')
 
     # Set text angle on x axes
@@ -830,8 +864,14 @@ def update_figure(risk_types, risk, selected_scale):
     fig.update_layout(barmode='group')
 
     # Build our graph
-    fig.update_layout(title='<b>Comparison of Gross and Net Risk by Business Function</b>)')
-    fig.update_layout(showlegend=True, title_x=0.5, height=800)
+    fig.update_layout(title='<b>Comparison of Gross and Net Risk by Business Function</b>)',
+                      showlegend=True,
+                      title_x=0.5,
+                      height=800,
+                      paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)'
+                      )
+
     fig.update_layout(xaxis_categoryorder='total ascending')
     fig.update_xaxes(tickangle=45, title_text='<b>Business Function<b>')
     fig.update_yaxes(title_text='<b>Risk Score<b>')
@@ -855,7 +895,10 @@ def update_figure(risk_types, risk, selected_scale):
 
     # Build our graph
     fig = px.pie(df2, values=df2, names=df2.index, title='<b>Total Number of Risks by Business Function<b>')
-    fig.update_layout(showlegend=True, title_x=0.5, height = 800)
+    fig.update_layout(showlegend=True,
+                      title_x=0.5,
+                      height=800
+                      )
     fig.update_traces(hole=.4,textinfo='value+label+percent', hoverinfo="percent+name", textposition='inside',insidetextorientation='radial')
 
     return fig
@@ -884,7 +927,7 @@ def update_figure(risk_types, risk, selected_scale):
     return fig
 
 
-# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------f
 # Run app and display the result
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
