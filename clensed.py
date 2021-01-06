@@ -2,6 +2,7 @@ import dash
 from dash.dependencies import Input, Output
 import pandas as pd
 import re
+import os
 import plotly.express as px
 import plotly.graph_objects as go
 import dash_table
@@ -28,13 +29,17 @@ color_3 = "#000000"
 palette = cycle(px.colors.qualitative.Dark24)
 
 # ------------------------------------------------------------------------------
-# Import RACA Data /Prepare the RACA Data
+# Import TEST RACA Data /Prepare the RACA Data
 # ------------------------------------------------------------------------------
-
+# Test data
 APP_DATA = "clensed.csv"
 
-# import dataframe and do some column renames
+# import TEST dataframe and do some column renames
 raca_df = pd.read_csv(APP_DATA)
+
+# ------------------------------------------------------------------------------
+# Rename our column headers
+# ------------------------------------------------------------------------------
 
 raca_df.rename(columns={'Process (Title)': 'process_title',
                         'Process description': 'process_description',
@@ -119,7 +124,7 @@ for value in extract:
         result.append('Client Profile')
     else:
         print(f"Business Unit {value} has not been added to the function yet")
-    # print(f'DEBUG1: Results just in {result}')
+
 
 # Apply reuslts to 'business_unit' to create the column in the dataframe
 raca_df['business_unit'] = result
@@ -802,39 +807,113 @@ def set_tl3_options(tl2_options):
     Input('level3', 'value'))
 def output_dataframe(data):
     print(f'DEBUG 3.1: Level 3 value {data}')
-    return raca_df.to_dict('records')
+    table_df = raca_df
+    table_df.drop_duplicates(subset=['risk_id'],inplace=True)
+    return table_df.to_dict('records')
 
 
 # ------------------------------------------------------------------------------
 # Barchart 1 - Total Number of Risks by Business Function
 # ------------------------------------------------------------------------------
-@ app.callback(Output('barchart1', 'figure'),
-               [Input('level3', 'value'),
-                Input('risk', 'value'),
-                Input('risk_types', 'value')])
-def update_figure(risk_types, risk, selected_scale):
-    # Display all risks grouped by business unit
-    group = raca_df.groupby('business_unit')
-    df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
-    # df2
+@app.callback(Output('barchart1', 'figure'),
+              [Input('level3', 'value'),
+               Input('risk', 'value'),
+               Input('risk_types', 'value')])
+def update_figure(risk_types, risk, level3):
+    # Create a copy of our dataframe so we are not working on the original
+    df_copy = raca_df
 
-    # Build our graph
-    fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
-    fig.update_layout(showlegend=False,
-                      title_x=0.5,
-                      height=800,
-                      paper_bgcolor='rgba(0,0,0,0)',
-                      plot_bgcolor='rgba(0,0,0,0)'
-                      )
+    print(risk_types)
 
+    if risk_types == 'All':
+
+        # Display all risks grouped by business unit
+
+        group1 = df_copy.groupby('business_unit')
+        df2 = group1.apply(lambda x: x['risk_id'].sort_values().nunique())
+
+        # Build our graph
+        fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        fig.update_layout(showlegend=False,
+                          title_x=0.5,
+                          height=500,
+                          paper_bgcolor='rgba(0,0,0,0)',
+                          plot_bgcolor='rgba(0,0,0,0)')
         # Set the bar colour - CMC Blue
-    fig.update_traces(marker_color='#00DEFF')
+        fig.update_traces(marker_color='#00DEFF')
 
-    # Set text angle on x axes
-    fig.update_xaxes(tickangle=45, categoryorder='total ascending', title_text='<b>Business Function<b>')
-    fig.update_yaxes(title_text='<b>Number of Risks<b>')
+        # Set text angle on x axes
+        fig.update_xaxes(tickangle=45,
+                         categoryorder='total ascending',
+                         title_text='<b>Business Function<b>')
+        # Set Y axis text
+        fig.update_yaxes(title_text='<b>Number of Risks<b>')
 
-    return fig
+        return fig
+
+    elif risk_types != 'All':
+        # group2 = df_copy.groupby('business_unit')
+        # df3 = group2.apply(lambda x: x['risk_id'].sort_values().nunique())
+        #
+        # #Build our graph
+        # fig = df3.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        # fig.update_layout(showlegend=False,
+        #                   title_x=0.5,
+        #                   height=800,
+        #                   paper_bgcolor='rgba(0,0,0,0)',
+        #                   plot_bgcolor='rgba(0,0,0,0)')
+        # # Set the bar colour - CMC Blue
+        # fig.update_traces(marker_color='#00DEFF')
+        #
+        # # Set text angle on x axes
+        # fig.update_xaxes(tickangle=45,
+        #                  categoryorder='total ascending',
+        #                  title_text='<b>Business Function<b>')
+        # # Set Y axis text
+        # fig.update_yaxes(title_text='<b>Number of Risks<b>')
+        #
+        # return fig
+
+        df_filtered = raca_df[['gross_risk', 'business_unit']]
+
+        fig = px.line(df_filtered, x='business_unit', y='gross_risk')
+        fig.update_xaxes(tickangle=45,
+                         categoryorder='total ascending',
+                         title_text='<b>Business Function<b>')
+        # Set Y axis text
+        fig.update_yaxes(title_text='<b>Number of Risks<b>')
+
+
+        #fig = df_filtered.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        return fig
+
+# @ app.callback(Output('barchart1', 'figure'),
+#                [Input('level3', 'value'),
+#                 Input('risk', 'value'),
+#                 Input('risk_types', 'value')])
+# def update_figure(risk_types, risk, selected_scale):
+#     # Display all risks grouped by business unit
+#     group = raca_df.groupby('business_unit')
+#     df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
+#     # df2
+#
+#     # Build our graph
+#     fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+#     fig.update_layout(showlegend=False,
+#                       title_x=0.5,
+#                       height=800,
+#                       paper_bgcolor='rgba(0,0,0,0)',
+#                       plot_bgcolor='rgba(0,0,0,0)'
+#                       )
+#
+#         # Set the bar colour - CMC Blue
+#     fig.update_traces(marker_color='#00DEFF')
+#
+#     # Set text angle on x axes
+#     fig.update_xaxes(tickangle=45, categoryorder='total ascending', title_text='<b>Business Function<b>')
+#     fig.update_yaxes(title_text='<b>Number of Risks<b>')
+#
+#     return fig
 
 
 # ------------------------------------------------------------------------------
