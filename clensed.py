@@ -572,6 +572,191 @@ data_table = dash_table.DataTable(
 
 )
 
+oprisk_fig_table = dash_table.DataTable(
+    # ormr - OpRisk Monthly Reporting
+    id = 'ormr',
+
+# This line reads in all the columns in our dataframe raca_df
+    # columns=[{"name": i, "id": i} for i in raca_df.columns],
+    columns=[
+        {'name': 'Risk description', 'id': 'risk_description', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk ID', 'id': 'risk_id', 'type': 'text', 'editable': False},
+        {'name': 'Risk Owner', 'id': 'risk_owner', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk(Title)', 'id': 'risk_title', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 1', 'id': 'risk_types', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 2', 'id': 'risk', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 3', 'id': 'level3', 'type': 'text',
+         'editable': False},
+        {'name': 'Gross Risk', 'id': 'gross_risk', 'type': 'numeric',
+         'editable': False},
+        {'name': 'Net Risk', 'id': 'net_risk', 'type': 'numeric',
+         'editable': False},
+    ],
+    data=[],
+    filter_action="native",
+    sort_action="native",
+    style_cell={
+        'overflow': 'hidden',
+        'textOverflow': 'ellipsis',
+        'maxWidth': 0,
+        'textAlign': 'left',
+        'fontSize': 12,
+        'font-family': 'sans-serif',
+    },
+
+    # Allow exports to CSV files
+    export_format="csv",
+)
+
+all_raca_table = dash_table.DataTable(
+    # All Raca
+    id = 'allraca',
+
+# This line reads in all the columns in our dataframe raca_df
+    # columns=[{"name": i, "id": i} for i in raca_df.columns],
+    columns=[
+        {'name': 'Process (Title)', 'id': 'process_title', 'type': 'text',
+         'editable': False},
+        {'name': 'Process description', 'id': 'process_description',
+         'type': 'text', 'editable': False},
+        {'name': 'Risk ID', 'id': 'risk_id', 'type': 'text', 'editable': False},
+        {'name': 'Risk Owner', 'id': 'risk_owner', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk(Title)', 'id': 'risk_title', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Description', 'id': 'risk_description', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 1', 'id': 'risk_types', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 2', 'id': 'risk', 'type': 'text',
+         'editable': False},
+        {'name': 'Risk Category 3', 'id': 'level3', 'type': 'text',
+         'editable': False},
+        {'name': 'Associated KRIs', 'id': 'associated_kris', 'type': 'text',
+         'editable': False},
+        {'name': 'Gross Impact', 'id': 'gross_impact', 'type': 'numeric',
+         'editable': False},
+        {'name': 'Gross Likelihood', 'id': 'gross_likelihood',
+         'type': 'numeric', 'editable': False},
+        {'name': 'Control ID', 'id': 'control_id', 'type': 'text',
+         'editable': False},
+        {'name': 'Control Owner', 'id': 'control_owner', 'type': 'text',
+         'editable': False},
+        {'name': 'Control (Title)', 'id': 'control_title', 'type': 'text',
+         'editable': False},
+        {'name': 'Control Description', 'id': 'control_description',
+         'type': 'text', 'editable': False},
+        {'name': 'Control Activity', 'id': 'control_activity', 'type': 'text',
+         'editable': False},
+        {'name': 'Control Type', 'id': 'control_type', 'type': 'text',
+         'editable': False},
+        {'name': 'Control Frequency', 'id': 'control_frequency', 'type': 'text',
+         'editable': False},
+        {'name': 'DE & OE?', 'id': 'de_oe', 'type': 'text', 'editable': False},
+        {'name': 'Commentary on DE & OE assessment', 'id': 'de_oe_commentary',
+         'type': 'text', 'editable': False},
+        {'name': 'Net Impact', 'id': 'net_impact', 'type': 'numeric',
+         'editable': False},
+        {'name': 'Net Likelihood', 'id': 'net_likelihood', 'type': 'numeric',
+         'editable': False},
+        {'name': 'Commentary on Net Risk Assessment', 'id':
+            'net_risk_assesment_commentary', 'type': 'text', 'editable': False},
+        {'name': 'Risk Decision', 'id': 'risk_decision', 'type': 'text',
+         'editable': False},
+        {'name': 'Issue Description (if applicable)', 'id': 'issue_description',
+         'type': 'text', 'editable': False},
+        {'name': 'Action Description', 'id': 'action_description',
+         'type': 'text', 'editable': False},
+         {'name': 'Action Owner', 'id': 'action_owner', 'type': 'text',
+          'editable': False},
+        {'name': 'Action Due Date', 'id': 'action_due_date', 'type': 'text',
+         'editable': False},
+        {'name': 'Completion Date', 'id': 'completion_dat', 'type': 'text',
+         'editable': False},
+        {'name': 'Action ID', 'id': 'action_id', 'type': 'text',
+         'editable': False}
+    ],
+    data=[],
+    filter_action="native",
+    sort_action="native",
+    style_cell={
+        'overflow': 'hidden',
+        'textOverflow': 'ellipsis',
+        'maxWidth': 0,
+        'textAlign': 'left',
+        'fontSize': 12,
+        'font-family': 'sans-serif',
+    },
+
+    # Allow exports to CSV files
+    export_format="csv",
+
+    # ----------------------------------------------------------------
+    # Overflow cells' content into multiple lines
+    # ----------------------------------------------------------------
+    style_data={
+        'whiteSpace': 'normal',
+        'height': 'auto'
+    },
+
+    style_cell_conditional=[
+        {'if': {'column_id': 'risk_description'},
+         'width': '40%', 'textAlign': 'left'},
+        {'if': {'column_id': 'risk_id'},
+         'width': '5%', 'textAlign': 'left'},
+        {'if': {'column_id': 'risk_owner'},
+         'width': '5%', 'textAlign': 'left'},
+        {'if': {'column_id': 'risk_title'},
+         'width': '10%', 'textAlign': 'left'},
+        {'if': {'column_id': 'risk_type'},
+         'width': '10%', 'textAlign': 'left'},
+        {'if': {'column_id': 'risk'},
+         'width': '10%', 'textAlign': 'left'},
+        {'if': {'column_id': 'level3'},
+         'width': '10%', 'textAlign': 'left'},
+        {'if': {'column_id': 'gross_risk'},
+         'width': '7%'},
+        {'if': {'column_id': 'gross_risk'},
+         'width': '7%'},
+    ],
+    style_data_conditional=[
+        # Set up alternating line colourings for ease of reading
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(235, 239, 240)'
+        },
+
+        # Align text to the left ******************************
+        {
+            'if': {
+                'column_type': 'numeric'
+                # 'text' | 'any' | 'datetime' | 'numeric'
+            },
+            'textAlign': 'right'
+        },
+
+        # Format active cells *********************************
+        {
+            'if': {
+                'state': 'active'  # 'active' | 'selected'
+            },
+            'border': '1px solid rgb(7, 22, 51)',
+            'backgroundColor': 'rgb(212, 248, 255)'
+        },
+        {
+            'if': {
+                'column_editable': False  # True | False
+            },
+        },
+    ]
+)
+
+
 # ------------------------------------------------------------------------------
 # Define tabs
 # ------------------------------------------------------------------------------
@@ -647,6 +832,48 @@ tab2_content = dbc.Col(
     ]
 )
 
+# Data table showing Monthly reporting section
+tab3_content = dbc.Col(
+    [
+        html.Div([
+            html.Br(),
+            html.Span('Monthly Reporting figures', style={
+                "font-size": 22,
+                "color": color_2,
+                'font-weight': 'bold'}),
+
+            html.Br(),
+            html.Span('This is Statistics and figures used in the OpRisk '
+                      'Monthly reporting',
+                      style={
+                          "font-size": 14,
+                          "color": color_2}),
+        ]
+        ),
+        dbc.Card(oprisk_fig_table, body=True)
+    ]
+)
+
+# Data table showing Monthly reporting section
+tab4_content = dbc.Col(
+    [
+        html.Div([
+            html.Br(),
+            html.Span('All RACA Data', style={
+                "font-size": 22,
+                "color": color_2,
+                'font-weight': 'bold'}),
+
+            html.Br(),
+            html.Span('This is all the data that is used in this application ',
+                      style={
+                          "font-size": 14,
+                          "color": color_2}),
+        ]
+        ),
+        dbc.Card(all_raca_table, body=True)
+    ]
+)
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content,
@@ -658,6 +885,18 @@ tabs = dbc.Tabs(
                 tab_id="tab_total",
                 label="Risk Table"),
         # style={"width": "100%"}),
+
+        dbc.Tab(tab3_content,
+                tab_id="tab_oprisk_fig",
+                label="Monthly Reporting"),
+                # style={"width": "100%"}),
+
+        dbc.Tab(tab4_content,
+                tab_id="tab_alldata",
+                label="All RACA Data"),
+        # style={"width": "100%"}),
+
+
 
     ],
     id="tabs",
@@ -710,6 +949,10 @@ def toggle_tabs(id_tab):
     elif id_tab == "tab_map":
         return True, True, "0%", 6, 5, 4, 3, 2
     elif id_tab == "tab_total":
+        return False, True, "0%", 6, 5, 4, 3, 2
+    elif id_tab == "tab_oprisk_fig":
+        return False, True, "0%", 6, 5, 4, 3, 2
+    elif id_tab == "tab_alldata":
         return False, True, "0%", 6, 5, 4, 3, 2
 
 # # ------------------------------------------------------------------------------
