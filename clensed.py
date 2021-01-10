@@ -67,7 +67,8 @@ raca_df.rename(columns={'Process (Title)': 'process_title',
                         'Commentary on Net Risk Assessment':
                             'net_risk_assesment_commentary',
                         'Risk Decision': 'risk_decision',
-                        'Issue Description (if applicable)': 'issue_description',
+                        'Issue Description (if applicable)':
+                            'issue_description',
                         'Action Description': 'action_description',
                         'Action Owner': 'action_owner',
                         'Action Due Date': 'action_due_date',
@@ -236,7 +237,8 @@ level3_dropdown = dcc.Dropdown(
 )
 
 # Dropdown containing business units
-# This can be used to just report on the RACAs from the particular business unit.
+# This can be used to just report on the RACAs from the particular business
+# unit.
 business_unit_dropdown = dcc.Dropdown(
     id="business_unit_dropdown",
     multi=False,
@@ -298,7 +300,8 @@ overview_options_card = dbc.Card(
                         html.Br(),
                         html.Br(),
                         html.Div(id='business-unit-container', children=[
-                            dbc.Row([dbc.Label("Or Select a Business Unit Below")]),
+                            dbc.Row([
+                                dbc.Label("Or Select a Business Unit Below")]),
                             html.Br(),
                             dbc.Row([dbc.Label("Select Business Unit")]),
                             dbc.Row([business_unit_dropdown]),
@@ -310,8 +313,10 @@ overview_options_card = dbc.Card(
                         dbc.Col(
                             [
                                 html.Div(id='legend-container', children=[
-                                    dbc.Table(table_header + table_body, bordered=True),
-                                ], style={'display': 'block', 'marginBottom': 50}),
+                                    dbc.Table(table_header + table_body,
+                                              bordered=True),
+                                ], style={'display': 'block',
+                                          'marginBottom': 50}),
                             ]
                         ),
 
@@ -1078,10 +1083,11 @@ def update_figure(risk_types, risk, level3):
         df2 = group1.apply(lambda x: x['risk_id'].sort_values().nunique())
 
         # Build our graph
-        fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        fig = df2.plot.bar(
+            title='<b>Total Number of Risks by Business Function<b>')
         fig.update_layout(showlegend=False,
                           title_x=0.5,
-                          height=500,
+                          height=800,
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)')
         # Set the bar colour - CMC Blue
@@ -1101,7 +1107,8 @@ def update_figure(risk_types, risk, level3):
         # df3 = group2.apply(lambda x: x['risk_id'].sort_values().nunique())
         #
         # #Build our graph
-        # fig = df3.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        #fig = df3.plot.bar(
+        #    title='<b>Total Number of Risks by Business Function<b>')
         # fig.update_layout(showlegend=False,
         #                   title_x=0.5,
         #                   height=800,
@@ -1129,7 +1136,8 @@ def update_figure(risk_types, risk, level3):
         fig.update_yaxes(title_text='<b>Number of Risks<b>')
 
 
-        #fig = df_filtered.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+        #fig = df_filtered.plot.bar(
+        # title='<b>Total Number of Risks by Business Function<b>')
         return fig
 
 # @ app.callback(Output('barchart1', 'figure'),
@@ -1143,7 +1151,8 @@ def update_figure(risk_types, risk, level3):
 #     # df2
 #
 #     # Build our graph
-#     fig = df2.plot.bar(title='<b>Total Number of Risks by Business Function<b>')
+#      fig = df2.plot.bar(
+#          title='<b>Total Number of Risks by Business Function<b>')
 #     fig.update_layout(showlegend=False,
 #                       title_x=0.5,
 #                       height=800,
@@ -1155,7 +1164,9 @@ def update_figure(risk_types, risk, level3):
 #     fig.update_traces(marker_color='#00DEFF')
 #
 #     # Set text angle on x axes
-#     fig.update_xaxes(tickangle=45, categoryorder='total ascending', title_text='<b>Business Function<b>')
+#      fig.update_xaxes(tickangle=45,
+#                       categoryorder='total ascending',
+#                       title_text='<b>Business Function<b>')
 #     fig.update_yaxes(title_text='<b>Number of Risks<b>')
 #
 #     return fig
@@ -1171,12 +1182,12 @@ def update_figure(risk_types, risk, level3):
 def update_figure(risk_types, risk, selected_scale):
     group = raca_df.groupby('business_unit')
     # Get our Gross risk by business unit
-    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /
+    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /\
            group.apply(lambda x: x['risk_id'].sort_values().nunique()))
 
     # Display all risks grouped by business unit
     #group = df.groupby('business_unit')
-    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /
+    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /\
            group.apply(lambda x: x['risk_id'].sort_values().nunique()))
     df4.astype(int)
 
@@ -1188,7 +1199,8 @@ def update_figure(risk_types, risk, selected_scale):
     fig.update_layout(barmode='group')
 
     # Build our graph
-    fig.update_layout(title='<b>Comparison of Gross and Net Risk by Business Function</b>)',
+    fig.update_layout(title='<b>Comparison of Gross and Net Risk by Business'
+                            ' Function</b>)',
                       showlegend=True,
                       title_x=0.5,
                       height=800,
@@ -1197,8 +1209,12 @@ def update_figure(risk_types, risk, selected_scale):
                       )
 
     fig.update_layout(xaxis_categoryorder='total ascending')
-    fig.update_xaxes(tickangle=45, title_text='<b>Business Function<b>')
-    fig.update_yaxes(title_text='<b>Risk Score<b>')
+    fig.update_xaxes(tickangle=45,
+                     title_text='<b>Business Function<b>'
+                     )
+
+    fig.update_yaxes(title_text='<b>Risk Score<b>'
+                     )
 
     return fig
 
@@ -1209,21 +1225,29 @@ def update_figure(risk_types, risk, selected_scale):
 @ app.callback(Output('barchart2', 'figure'),
                [Input('level3', 'value'),
                 Input('risk', 'value'),
-                Input('risk_types', 'value')])
+                Input('risk_types', 'value')]
+               )
 def update_figure(risk_types, risk, selected_scale):
-
     # Display all risks grouped by business unit
     group = raca_df.groupby('business_unit')
     df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
     #df2
 
     # Build our graph
-    fig = px.pie(df2, values=df2, names=df2.index, title='<b>Total Number of Risks by Business Function<b>')
+    fig = px.pie(df2, values=df2,
+                 names=df2.index,
+                 title='<b>Total Number of Risks by Business Function<b>'
+                 )
+
     fig.update_layout(showlegend=True,
                       title_x=0.5,
                       height=800
                       )
-    fig.update_traces(hole=.4,textinfo='value+label+percent', hoverinfo="percent+name", textposition='inside',insidetextorientation='radial')
+    fig.update_traces(hole=.4,
+                      textinfo='value+label+percent',
+                      hoverinfo="percent+name",
+                      textposition='inside',
+                      insidetextorientation='radial')
 
     return fig
 
@@ -1234,14 +1258,25 @@ def update_figure(risk_types, risk, selected_scale):
 @ app.callback(Output('piechart2', 'figure'),
                [Input('level3', 'value'),
                 Input('risk', 'value'),
-                Input('risk_types', 'value')])
+                Input('risk_types', 'value')]
+               )
 def update_figure(risk_types, risk, selected_scale):
     group = raca_df.groupby('business_unit')
-    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) / group.apply(lambda x: x['risk_id'].sort_values().nunique()))
-    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) / group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /\
+    group.apply(lambda x: x['risk_id'].sort_values().nunique()))
+    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /\
+    group.apply(lambda x: x['risk_id'].sort_values().nunique()))
 
-    fig = px.pie(df4, values=df3, names=df4.index, title='<b>Net Risk Score by Business Function<b>')
-    fig.update_layout(showlegend=True, title_x=0.5, height = 800)
+    fig = px.pie(df4, values=df3,
+                 names=df4.index,
+                 title='<b>Net Risk Score by Business Function<b>'
+                 )
+
+    fig.update_layout(showlegend=True,
+                      title_x=0.5,
+                      height = 800
+                      )
+
     fig.update_traces(hole=.4,
                       textinfo='value+label',
                       hoverinfo="percent+name",
@@ -1250,8 +1285,7 @@ def update_figure(risk_types, risk, selected_scale):
 
     return fig
 
-
-# ------------------------------------------------------------------------------f
+# ------------------------------------------------------------------------------
 # Run app and display the result
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
