@@ -32,10 +32,10 @@ palette = cycle(px.colors.qualitative.Dark24)
 # Import TEST RACA Data /Prepare the RACA Data
 # ------------------------------------------------------------------------------
 # Test data
-APP_DATA = "clensed.csv"
+APP_DATA = "clensed.xlsx"
 
 # import TEST dataframe and do some column renames
-raca_df = pd.read_csv(APP_DATA)
+raca_df = pd.read_excel(APP_DATA)
 
 # ------------------------------------------------------------------------------
 # Rename our column headers
@@ -807,6 +807,8 @@ def set_tl3_options(tl2_options):
     Input('level3', 'value'))
 def output_dataframe(data):
     print(f'DEBUG 3.1: Level 3 value {data}')
+    
+    
     table_df = raca_df
     table_df.drop_duplicates(subset=['risk_id'],inplace=True)
     return table_df.to_dict('records')
