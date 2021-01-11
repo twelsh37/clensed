@@ -2,7 +2,6 @@ import dash
 from dash.dependencies import Input, Output
 import pandas as pd
 import re
-import os
 import plotly.express as px
 import plotly.graph_objects as go
 import dash_table
@@ -329,6 +328,112 @@ overview_options_card = dbc.Card(
     style={"width": "100%"},
 )
 
+#------------------------------------------------------------------------------
+# Define our cards
+# ------------------------------------------------------------------------------
+card_monthly_reporting = dbc.Card(
+    [
+        dbc.CardBody(
+            [
+                html.H5("Issues/Actions logged against a Business Unit",
+                        className="card-title"),
+
+                # html.H6("Number of Actions against a Business Unit",
+                #         className="card-subtitle"),
+
+                html.P(
+                    "Number of Actions against a Business Unit",
+                    className="card-text",
+                ),
+
+                dash_table.DataTable(
+                    id = 'dt_card_mr',
+                    columns=[
+                            {'name': 'RACA Business Unit', 'id':'business_unit',
+                             'type': 'text','editable': False},
+                            {'name': 'Open RACA issues/Actions', 'id':
+                                'count',
+                         'type': 'text', 'editable': False},
+
+                    ],
+                    style_cell = {
+                                 'overflow': 'hidden',
+                                 'textOverflow': 'ellipsis',
+                                 'maxWidth': 40,
+                                 'textAlign': 'left',
+                                 'fontSize': 12,
+                                 'font-family': 'sans-serif',
+                             },
+
+                )
+            ]
+
+        )
+    ],
+    color="light",   # https://bootswatch.com/default/ for more card colors
+    inverse=False,   # change color of text (black or white)
+    outline=True,  # True = remove the block colors from the background and
+    # header
+    style={"width": "30rem"}
+)
+
+card_monthly_reporting_2 = dbc.Card(
+    [
+        dbc.CardBody(
+            [
+                html.H5("RACA Actions Summary",
+                        className="card-title"),
+
+                html.P(
+                    "Action status tracked against time",
+                    className="card-text",
+                ),
+                dash_table.DataTable(
+                    id = 'dt_card_mr_1',
+                    columns=[
+                            {'name': 'RACA Business Unit', 'id':'business_unit',
+                             'type': 'text','editable': False},
+                            {'name': 'Overdue more than 3 Months', 'id':'gt-3',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Overdue between 1 & 3 Months',
+                             'id':'lteq-3', 'type': 'numeric',
+                             'editable': False},
+                            {'name': 'Due within 1 Month', 'id':'lteq-13',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Due between 1 & 3 months', 'id':'lteq13',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Due min more than 3 momnths', 'id':'gt3',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Due date to be confirmed', 'id':'ddtbc',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Total Open Actions', 'id':'toa',
+                             'type': 'numeric','editable': False},
+                            {'name': 'Total Actions', 'id':'ta',
+                             'type': 'numeric','editable': False},
+                            {'name': 'total', 'id':'total', 'type': 'numeric',
+                             'editable': False},
+                    ],
+                    style_cell = {
+                                 'overflow': 'hidden',
+                                 'textOverflow': 'ellipsis',
+                                 'maxWidth': 40,
+                                 'textAlign': 'left',
+                                 'fontSize': 12,
+                                 'font-family': 'sans-serif',
+                             },
+
+                )
+            ]
+
+        )
+    ],
+    color="light",   # https://bootswatch.com/default/ for more card colors
+    inverse=False,   # change color of text (black or white)
+    outline=True,  # True = remove the block colors from the background and
+    style={"width": "70rem"}
+    # header
+    #className="w-100 mb-3"
+)
 # ------------------------------------------------------------------------------
 # Define Risk Datatable
 # ------------------------------------------------------------------------------
@@ -831,33 +936,47 @@ tab2_content = dbc.Col(
                       style={
                           "font-size": 14,
                           "color": color_2}),
-        ]
+        ], className="mb-3"
         ),
-        dbc.Card(data_table, body=True)
+        dbc.Card(data_table, body=False)
     ]
 )
 
 # Data table showing Monthly reporting section
-tab3_content = dbc.Col(
-    [
-        html.Div([
-            html.Br(),
-            html.Span('Monthly Reporting figures', style={
-                "font-size": 22,
-                "color": color_2,
-                'font-weight': 'bold'}),
+tab3_content = dbc.Row([
+                html.Div([
+                    html.Br(),
+                    html.Span('Risk Data', style={
+                        "font-size": 22,
+                        "color": color_2,
+                        'font-weight': 'bold'}),
 
-            html.Br(),
-            html.Span('This is Statistics and figures used in the OpRisk '
-                      'Monthly reporting',
-                      style={
-                          "font-size": 14,
-                          "color": color_2}),
-        ]
-        ),
-        dbc.Card(oprisk_fig_table, body=True)
+                    html.Br(),
+                    html.Span('Initial Risk data as well as a cumulative Gross and Net'
+                              ' risk score arrived at by multiplying '
+                              'Gross Impact x Gross Likelihood, and similar for Net',
+                              style={
+                                  "font-size": 14,
+                                  "color": color_2}),
+
+                ],className="mb-3"
+                ),
+                dbc.Row([
+                    dbc.Col(
+                        [
+                            dbc.Card(card_monthly_reporting, body=True),
+                        ]
+                    ),
+                    dbc.Col(
+                        [
+                            dbc.Card(card_monthly_reporting_2, body=True),
+                        ]
+                    )
+                ]
+            )
     ]
 )
+
 
 # Data table showing Monthly reporting section
 tab4_content = dbc.Col(
@@ -874,7 +993,7 @@ tab4_content = dbc.Col(
                       style={
                           "font-size": 14,
                           "color": color_2}),
-        ]
+        ],className="mb-3"
         ),
         dbc.Card(all_raca_table, body=True)
     ]
@@ -894,14 +1013,12 @@ tabs = dbc.Tabs(
         dbc.Tab(tab3_content,
                 tab_id="tab_oprisk_fig",
                 label="Monthly Reporting"),
-                # style={"width": "100%"}),
+                #style={"width": "50%"}),
 
         dbc.Tab(tab4_content,
                 tab_id="tab_alldata",
                 label="All RACA Data"),
         # style={"width": "100%"}),
-
-
 
     ],
     id="tabs",
@@ -926,7 +1043,11 @@ app.layout = html.Div(
                         )
                     ], id="menu_col_1", width=6, xs=6, sm=5, md=4, lg=3, xl=2
                 ),
-                dbc.Col([tabs]),
+                dbc.Col(
+                    [
+                        tabs
+                    ]
+                ),
             ], style={"height": "auto", "width": "99%"},
         )
     ],
@@ -1078,7 +1199,6 @@ def update_figure(risk_types, risk, level3):
     if risk_types == 'All':
 
         # Display all risks grouped by business unit
-
         group1 = df_copy.groupby('business_unit')
         df2 = group1.apply(lambda x: x['risk_id'].sort_values().nunique())
 
@@ -1090,41 +1210,21 @@ def update_figure(risk_types, risk, level3):
                           height=800,
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)')
-        # Set the bar colour - CMC Blue
+
+        # Set the bar colour
         fig.update_traces(marker_color='#00DEFF')
 
         # Set text angle on x axes
         fig.update_xaxes(tickangle=45,
                          categoryorder='total ascending',
                          title_text='<b>Business Function<b>')
+
         # Set Y axis text
         fig.update_yaxes(title_text='<b>Number of Risks<b>')
 
         return fig
 
-    elif risk_types != 'All':
-        # group2 = df_copy.groupby('business_unit')
-        # df3 = group2.apply(lambda x: x['risk_id'].sort_values().nunique())
-        #
-        # #Build our graph
-        #fig = df3.plot.bar(
-        #    title='<b>Total Number of Risks by Business Function<b>')
-        # fig.update_layout(showlegend=False,
-        #                   title_x=0.5,
-        #                   height=800,
-        #                   paper_bgcolor='rgba(0,0,0,0)',
-        #                   plot_bgcolor='rgba(0,0,0,0)')
-        # # Set the bar colour - CMC Blue
-        # fig.update_traces(marker_color='#00DEFF')
-        #
-        # # Set text angle on x axes
-        # fig.update_xaxes(tickangle=45,
-        #                  categoryorder='total ascending',
-        #                  title_text='<b>Business Function<b>')
-        # # Set Y axis text
-        # fig.update_yaxes(title_text='<b>Number of Risks<b>')
-        #
-        # return fig
+    else: # risk_types != 'All'
 
         df_filtered = raca_df[['gross_risk', 'business_unit']]
 
@@ -1132,45 +1232,11 @@ def update_figure(risk_types, risk, level3):
         fig.update_xaxes(tickangle=45,
                          categoryorder='total ascending',
                          title_text='<b>Business Function<b>')
+
         # Set Y axis text
         fig.update_yaxes(title_text='<b>Number of Risks<b>')
 
-
-        #fig = df_filtered.plot.bar(
-        # title='<b>Total Number of Risks by Business Function<b>')
         return fig
-
-# @ app.callback(Output('barchart1', 'figure'),
-#                [Input('level3', 'value'),
-#                 Input('risk', 'value'),
-#                 Input('risk_types', 'value')])
-# def update_figure(risk_types, risk, selected_scale):
-#     # Display all risks grouped by business unit
-#     group = raca_df.groupby('business_unit')
-#     df2 = group.apply(lambda x: x['risk_id'].sort_values().nunique())
-#     # df2
-#
-#     # Build our graph
-#      fig = df2.plot.bar(
-#          title='<b>Total Number of Risks by Business Function<b>')
-#     fig.update_layout(showlegend=False,
-#                       title_x=0.5,
-#                       height=800,
-#                       paper_bgcolor='rgba(0,0,0,0)',
-#                       plot_bgcolor='rgba(0,0,0,0)'
-#                       )
-#
-#         # Set the bar colour - CMC Blue
-#     fig.update_traces(marker_color='#00DEFF')
-#
-#     # Set text angle on x axes
-#      fig.update_xaxes(tickangle=45,
-#                       categoryorder='total ascending',
-#                       title_text='<b>Business Function<b>')
-#     fig.update_yaxes(title_text='<b>Number of Risks<b>')
-#
-#     return fig
-
 
 # ------------------------------------------------------------------------------
 # Barchart 2 - Graph showing both Gross and Net risk by business function
@@ -1182,12 +1248,12 @@ def update_figure(risk_types, risk, level3):
 def update_figure(risk_types, risk, selected_scale):
     group = raca_df.groupby('business_unit')
     # Get our Gross risk by business unit
-    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /\
+    df3 = (group.apply(lambda x: x['gross_risk'].dropna().sum()) /
            group.apply(lambda x: x['risk_id'].sort_values().nunique()))
 
     # Display all risks grouped by business unit
     #group = df.groupby('business_unit')
-    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /\
+    df4 = (group.apply(lambda x: x['net_risk'].dropna().sum()) /
            group.apply(lambda x: x['risk_id'].sort_values().nunique()))
     df4.astype(int)
 
@@ -1217,7 +1283,6 @@ def update_figure(risk_types, risk, selected_scale):
                      )
 
     return fig
-
 
 # ------------------------------------------------------------------------------
 # Pie Chart 1 - Graph showing Total Number of Risks by Business Function
@@ -1284,6 +1349,27 @@ def update_figure(risk_types, risk, selected_scale):
                       insidetextorientation='radial')
 
     return fig
+
+# ------------------------------------------------------------------------------
+# Tab 3 - Update Monthly reporting figures for Actions outstanding by
+# business unit
+# Calculate the number of actions logged against each business unit
+# 1 Look at raca_df['action_id'] and if not a null value note the business
+# function add to the count for the business function.
+# Report data by unique business unit.
+# ------------------------------------------------------------------------------
+# @app.callback(
+#     [Output('dt_card_mr', 'data')],
+#     [Input('', component_property='n_clicks_timestamp')])
+# def display_tweets(submit_button, screen_names):
+#     temp_df = raca_df[['business_unit', 'action_id']]
+#     temp_df = temp_df.dropna()
+#     action_figs = temp_df.count()
+#     data = action_figs.to_dict(orient='records')
+#     print(data)
+#     return data
+
+
 
 # ------------------------------------------------------------------------------
 # Run app and display the result
