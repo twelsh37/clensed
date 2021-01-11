@@ -365,6 +365,10 @@ card_monthly_reporting = dbc.Card(
                                  'font-family': 'sans-serif',
                              },
 
+                    style_header={'backgroundColor': 'rgb(7,22,51)',
+                                  'color': 'white',
+                                  'font_size': '12px'},
+
                 )
             ]
 
@@ -421,6 +425,10 @@ card_monthly_reporting_2 = dbc.Card(
                                  'fontSize': 12,
                                  'font-family': 'sans-serif',
                              },
+
+                    style_header={'backgroundColor': 'rgb(7,22,51)',
+                                  'color': 'white',
+                                  'font_size': '12px'},
 
                 )
             ]
@@ -802,6 +810,14 @@ all_raca_table = dash_table.DataTable(
         'fontSize': 12,
         'font-family': 'sans-serif',
     },
+        # ------------------------------------------------------------------
+        # Freeze Rows - digit represents number of rows frozen 0 being header
+        # row
+        # ------------------------------------------------------------------
+    fixed_rows = {'headers': True, 'data': 0},
+    style_header = {'backgroundColor': 'rgb(7, 22, 51)',
+                    'fontWeight': 'bold',
+                    'color': 'white'},
 
     # Allow exports to CSV files
     export_format="csv",
@@ -939,6 +955,7 @@ tab2_content = dbc.Col(
         ], className="mb-3"
         ),
         dbc.Card(data_table, body=False)
+
     ]
 )
 
@@ -996,8 +1013,9 @@ tab4_content = dbc.Col(
         ],className="mb-3"
         ),
         dbc.Card(all_raca_table, body=True)
-    ]
+    ],
 )
+
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content,
