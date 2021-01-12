@@ -799,7 +799,13 @@ all_raca_table = dash_table.DataTable(
         {'name': 'Action ID', 'id': 'action_id', 'type': 'text',
          'editable': False}
     ],
-    data=[],
+    # ------------------------------------------------------------------
+    # Freeze Rows - digit represents number of rows frozen 0 being header
+    # row
+    # ------------------------------------------------------------------
+    fixed_rows={'headers': True, 'data': 0},
+
+    #data=[],
     filter_action="native",
     sort_action="native",
     style_cell={
@@ -809,18 +815,18 @@ all_raca_table = dash_table.DataTable(
         'textAlign': 'left',
         'fontSize': 12,
         'font-family': 'sans-serif',
+        'minWidth': 95, 'maxWidth': 95, 'width': 95
     },
-        # ------------------------------------------------------------------
-        # Freeze Rows - digit represents number of rows frozen 0 being header
-        # row
-        # ------------------------------------------------------------------
-    fixed_rows = {'headers': True, 'data': 0},
-    style_header = {'backgroundColor': 'rgb(7, 22, 51)',
-                    'fontWeight': 'bold',
-                    'color': 'white'},
 
     # Allow exports to CSV files
     export_format="csv",
+
+    style_header={'backgroundColor': 'rgb(7, 22, 51)',
+                  'fontWeight': 'bold',
+                  'color': 'white'},
+
+    style_table={'maxHeight': '600px',
+                 'overflowX': 'auto'},
 
     # ----------------------------------------------------------------
     # Overflow cells' content into multiple lines
@@ -830,26 +836,6 @@ all_raca_table = dash_table.DataTable(
         'height': 'auto'
     },
 
-    style_cell_conditional=[
-        {'if': {'column_id': 'risk_description'},
-         'width': '40%', 'textAlign': 'left'},
-        {'if': {'column_id': 'risk_id'},
-         'width': '5%', 'textAlign': 'left'},
-        {'if': {'column_id': 'risk_owner'},
-         'width': '5%', 'textAlign': 'left'},
-        {'if': {'column_id': 'risk_title'},
-         'width': '10%', 'textAlign': 'left'},
-        {'if': {'column_id': 'risk_type'},
-         'width': '10%', 'textAlign': 'left'},
-        {'if': {'column_id': 'risk'},
-         'width': '10%', 'textAlign': 'left'},
-        {'if': {'column_id': 'level3'},
-         'width': '10%', 'textAlign': 'left'},
-        {'if': {'column_id': 'gross_risk'},
-         'width': '7%'},
-        {'if': {'column_id': 'gross_risk'},
-         'width': '7%'},
-    ],
     style_data_conditional=[
         # Set up alternating line colourings for ease of reading
         {
@@ -996,7 +982,7 @@ tab3_content = dbc.Row([
 
 
 # Data table showing Monthly reporting section
-tab4_content = dbc.Col(
+tab4_content = dbc.Row(
     [
         html.Div([
             html.Br(),
@@ -1012,7 +998,14 @@ tab4_content = dbc.Col(
                           "color": color_2}),
         ],className="mb-3"
         ),
-        dbc.Card(all_raca_table, body=True)
+        dbc.Row([
+            dbc.Col(
+                [
+                dbc.Card(all_raca_table, body=True)
+                    ]
+                )
+            ],
+        ),
     ],
 )
 
@@ -1058,9 +1051,11 @@ app.layout = html.Div(
                         dbc.Collapse(
                             overview_options_card,
                             id="menu_1",
-                        )
+                        ),
                     ], id="menu_col_1", width=6, xs=6, sm=5, md=4, lg=3, xl=2
-                ),
+
+
+                    ),
                 dbc.Col(
                     [
                         tabs
@@ -1154,6 +1149,18 @@ def show_hide_element(id_tab):
         return {'display': 'none'}
 
 # ------------------------------------------------------------------------------
+# disable sidebar dropdown menu if on All data tab
+# ------------------------------------------------------------------------------
+# @app.callback(
+#     Output('alldata-container', 'style'),
+#     [Input("tabs", "active_tab")])
+# def show_hide_sidebar(id_tab):
+#     if id_tab == 'active_tab':
+#         return {'display': 'block'}
+#     else:
+#         return {'display': 'none'}
+
+# ------------------------------------------------------------------------------
 # Set Callback to define our dropdown boxes
 # ------------------------------------------------------------------------------
 @app.callback(
@@ -1198,6 +1205,20 @@ def output_dataframe(data):
     
     table_df = raca_df
     table_df.drop_duplicates(subset=['risk_id'],inplace=True)
+    return table_df.to_dict('records')
+
+
+# ------------------------------------------------------------------------------
+# Define Callback to update all raca data on tab_4 id = allraca
+# ------------------------------------------------------------------------------
+@app.callback(
+    Output('allraca', 'data'),
+    Input('level3', 'value'))
+def output_dataframe(data):
+    print(f'DEBUG 4.1: Level 3 value {data}')
+
+    table_df = raca_df
+
     return table_df.to_dict('records')
 
 
@@ -1386,7 +1407,6 @@ def update_figure(risk_types, risk, selected_scale):
 #     data = action_figs.to_dict(orient='records')
 #     print(data)
 #     return data
-
 
 
 # ------------------------------------------------------------------------------
