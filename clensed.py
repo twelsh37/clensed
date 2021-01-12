@@ -74,11 +74,12 @@ raca_df.rename(columns={'Process (Title)': 'process_title',
                         'Completion Date': 'completion_date',
                         'Action ID': 'action_id'
                         }, inplace=True)
-
+# ------------------------------------------------------------------------------
 # calculate our gross and net risk scores
 # it does this by multiplying the impact and likelihood columns
 # the results are appended to teh df dataframe under columns
 # gross_risk and net_risk respectivly
+# ------------------------------------------------------------------------------
 raca_df['gross_risk'] = raca_df['gross_impact'] * raca_df['gross_likelihood']
 raca_df['net_risk'] = raca_df['net_impact'] * raca_df['net_likelihood']
 
@@ -86,9 +87,11 @@ raca_df['net_risk'] = raca_df['net_impact'] * raca_df['net_likelihood']
 raca_df['gross_risk'].apply(pd.to_numeric)
 raca_df['net_risk'].apply(pd.to_numeric)
 
+# ------------------------------------------------------------------------------
 # create our function to work through df['risk_id'] and just extract
 # the alpha prefix from the risk_id. E.g 'GMBH-P01-R01' becomes 'GMBH'
 # 'GMBH' is then appended to the list prefix[]
+# ------------------------------------------------------------------------------
 prefix = []
 
 
@@ -105,13 +108,17 @@ def business_unit():
 
 business_unit()
 
+# ------------------------------------------------------------------------------
 # This takes our list of lists, 'prefix', from the function above and pulls out
 # all its members into one list 'extract'
+# ------------------------------------------------------------------------------
 extract = [item[0] for item in prefix]
 
+# ------------------------------------------------------------------------------
 # Insert a new column to hold our business unit and populate it with Business
 # Unit Names. We get the business unit names from the 'extract[]' list in the
 # step above
+# ------------------------------------------------------------------------------
 result = []
 for value in extract:
     if value == 'DP':
@@ -125,8 +132,9 @@ for value in extract:
     else:
         print(f"Business Unit {value} has not been added to the function yet")
 
-
+# ------------------------------------------------------------------------------
 # Apply reuslts to 'business_unit' to create the column in the dataframe
+# ------------------------------------------------------------------------------
 raca_df['business_unit'] = result
 
 # ------------------------------------------------------------------------------
@@ -187,7 +195,9 @@ navbar = dbc.Navbar(
 # ------------------------------------------------------------------------------
 # Define dropdowns
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Risk Category 1
+# ------------------------------------------------------------------------------
 risk_types_dropdown = dcc.Dropdown(
     id='risk_types',
     multi=False,
@@ -202,8 +212,9 @@ risk_types_dropdown = dcc.Dropdown(
              for k in sorted(raca_df['risk_types'].astype(str).unique())] +
             [{'label': 'All', 'value': 'All'}],
 )
-
+# ------------------------------------------------------------------------------
 # Risk Category 2
+# ------------------------------------------------------------------------------
 risk_dropdown = dcc.Dropdown(
     id='risk',
     multi=False,
@@ -218,8 +229,9 @@ risk_dropdown = dcc.Dropdown(
     options=[{'label': k, 'value': k}
              for k in sorted(raca_df['risk'].astype(str).unique())]
 )
-
+# ------------------------------------------------------------------------------
 # Risk Category 2
+# ------------------------------------------------------------------------------
 level3_dropdown = dcc.Dropdown(
     id='level3',
     multi=False,
@@ -234,10 +246,11 @@ level3_dropdown = dcc.Dropdown(
     options=[],
 
 )
-
+# ------------------------------------------------------------------------------
 # Dropdown containing business units
 # This can be used to just report on the RACAs from the particular business
 # unit.
+# ------------------------------------------------------------------------------
 business_unit_dropdown = dcc.Dropdown(
     id="business_unit_dropdown",
     multi=False,
@@ -329,7 +342,7 @@ overview_options_card = dbc.Card(
 )
 
 #------------------------------------------------------------------------------
-# Define our cards
+# Define Issues/Actions Card in the Monthl Reporting  Tab
 # ------------------------------------------------------------------------------
 card_monthly_reporting = dbc.Card(
     [
@@ -381,6 +394,9 @@ card_monthly_reporting = dbc.Card(
     style={"width": "30rem"}
 )
 
+# ------------------------------------------------------------------------------
+# Define our RACA Actions Summary card on the Monthly reporting tab
+# ------------------------------------------------------------------------------
 card_monthly_reporting_2 = dbc.Card(
     [
         dbc.CardBody(
@@ -443,7 +459,7 @@ card_monthly_reporting_2 = dbc.Card(
     #className="w-100 mb-3"
 )
 # ------------------------------------------------------------------------------
-# Define Risk Datatable
+# Define Risk Datatable on the Risk Table tab
 # ------------------------------------------------------------------------------
 data_table = dash_table.DataTable(
     id='table',
@@ -690,11 +706,14 @@ data_table = dash_table.DataTable(
 
 )
 
+# ------------------------------------------------------------------------------
+# This defines our RACA Actions summary table on the Monthly RFeporting tab
+# ------------------------------------------------------------------------------
 oprisk_fig_table = dash_table.DataTable(
     # ormr - OpRisk Monthly Reporting
     id = 'ormr',
 
-# This line reads in all the columns in our dataframe raca_df
+    # This line reads in all the columns in our dataframe raca_df
     # columns=[{"name": i, "id": i} for i in raca_df.columns],
     columns=[
         {'name': 'Risk description', 'id': 'risk_description', 'type': 'text',
@@ -730,12 +749,15 @@ oprisk_fig_table = dash_table.DataTable(
     # Allow exports to CSV files
     export_format="csv",
 )
+# ------------------------------------------------------------------------------
+# This defines our Dash Data Tabble used in the All Racas Tab
+# ------------------------------------------------------------------------------
 
 all_raca_table = dash_table.DataTable(
     # All Raca
     id = 'allraca',
 
-# This line reads in all the columns in our dataframe raca_df
+    # This line reads in all the columns in our dataframe raca_df
     # columns=[{"name": i, "id": i} for i in raca_df.columns],
     columns=[
         {'name': 'Process (Title)', 'id': 'process_title', 'type': 'text',
@@ -872,6 +894,10 @@ all_raca_table = dash_table.DataTable(
 # ------------------------------------------------------------------------------
 # Define tabs
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Tab 1 - Overview - First tab conmtaining 4 charts and selection dropdowns
+# ------------------------------------------------------------------------------
+
 tab1_content = dbc.Row(
     [
         html.Div([
@@ -921,7 +947,9 @@ tab1_content = dbc.Row(
     no_gutters=True,
 )
 
-# Data table showing Risk section of RACA
+# ------------------------------------------------------------------------------
+# Tab 2  - Risk Table - Data table showing Risk section of RACA
+# ------------------------------------------------------------------------------
 tab2_content = dbc.Col(
     [
         html.Div([
@@ -945,7 +973,9 @@ tab2_content = dbc.Col(
     ]
 )
 
-# Data table showing Monthly reporting section
+# ------------------------------------------------------------------------------
+# Tab 3  -Monthly Reporting - # 2 x Datatables showing Monthly reporting figs
+# ------------------------------------------------------------------------------
 tab3_content = dbc.Row([
                 html.Div([
                     html.Br(),
@@ -980,8 +1010,9 @@ tab3_content = dbc.Row([
     ]
 )
 
-
-# Data table showing Monthly reporting section
+# ------------------------------------------------------------------------------
+# Tab 4 - All RACA Data - Datatable holding the complete RACA dataframe
+# ------------------------------------------------------------------------------
 tab4_content = dbc.Row(
     [
         html.Div([
@@ -1009,6 +1040,9 @@ tab4_content = dbc.Row(
     ],
 )
 
+# ------------------------------------------------------------------------------
+# Setting up tab layout
+# ------------------------------------------------------------------------------
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content,
@@ -1039,7 +1073,7 @@ tabs = dbc.Tabs(
 )
 
 # ------------------------------------------------------------------------------
-# Define layout
+# Define Application overall layout
 # ------------------------------------------------------------------------------
 app.layout = html.Div(
     [
@@ -1069,6 +1103,9 @@ app.layout = html.Div(
 
 
 # ------------------------------------------------------------------------------
+# CALLBACKS
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Define callback to toggle tabs
 # ------------------------------------------------------------------------------
 @app.callback(
@@ -1094,9 +1131,9 @@ def toggle_tabs(id_tab):
     elif id_tab == "tab_alldata":
         return False, True, "0%", 6, 5, 4, 3, 2
 
-# # ------------------------------------------------------------------------------
-# # Callback to hide L1 dropdown boxes if we are on teh risk table tab
-# # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Callback to hide L1 dropdown boxes if we are on teh risk table tab
+# ------------------------------------------------------------------------------
 # @app.callback(
 #     Output('overview-container', 'style'),
 #     [Input("tabs", "active_tab")])
@@ -1223,6 +1260,30 @@ def output_dataframe(data):
 
 
 # ------------------------------------------------------------------------------
+# Tab 3 - Update Monthly reporting figures for Actions outstanding by
+# business unit
+# Calculate the number of actions logged against each business unit
+# 1 Look at raca_df['action_id'] and if not a null value note the business
+# function add to the count for the business function.
+# Report data by unique business unit.
+# ------------------------------------------------------------------------------
+# @app.callback(
+#     [Output('dt_card_mr', 'data')],
+#     [Input('', component_property='n_clicks_timestamp')])
+# def display_tweets(submit_button, screen_names):
+#     temp_df = raca_df[['business_unit', 'action_id']]
+#     temp_df = temp_df.dropna()
+#     action_figs = temp_df.count()
+#     data = action_figs.to_dict(orient='records')
+#     print(data)
+#     return data
+
+
+
+# ------------------------------------------------------------------------------
+# CHARTS FROM OVERVIEW PAGE
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Barchart 1 - Total Number of Risks by Business Function
 # ------------------------------------------------------------------------------
 @app.callback(Output('barchart1', 'figure'),
@@ -1278,7 +1339,7 @@ def update_figure(risk_types, risk, level3):
         return fig
 
 # ------------------------------------------------------------------------------
-# Barchart 2 - Graph showing both Gross and Net risk by business function
+# Bar Chart 2 - Comparison of Gross and Net Risk by Business Function
 # ------------------------------------------------------------------------------
 @ app.callback(Output('piechart1', 'figure'),
                [Input('level3', 'value'),
@@ -1355,9 +1416,8 @@ def update_figure(risk_types, risk, selected_scale):
 
     return fig
 
-
 # ------------------------------------------------------------------------------
-# Pie Chart 2 - Graph showing Total Number of Risks by Business Function
+# Pie Chart 2 - Net Risk Score by Business Function
 # ------------------------------------------------------------------------------
 @ app.callback(Output('piechart2', 'figure'),
                [Input('level3', 'value'),
@@ -1389,24 +1449,6 @@ def update_figure(risk_types, risk, selected_scale):
 
     return fig
 
-# ------------------------------------------------------------------------------
-# Tab 3 - Update Monthly reporting figures for Actions outstanding by
-# business unit
-# Calculate the number of actions logged against each business unit
-# 1 Look at raca_df['action_id'] and if not a null value note the business
-# function add to the count for the business function.
-# Report data by unique business unit.
-# ------------------------------------------------------------------------------
-# @app.callback(
-#     [Output('dt_card_mr', 'data')],
-#     [Input('', component_property='n_clicks_timestamp')])
-# def display_tweets(submit_button, screen_names):
-#     temp_df = raca_df[['business_unit', 'action_id']]
-#     temp_df = temp_df.dropna()
-#     action_figs = temp_df.count()
-#     data = action_figs.to_dict(orient='records')
-#     print(data)
-#     return data
 
 
 # ------------------------------------------------------------------------------
